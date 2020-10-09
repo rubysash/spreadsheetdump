@@ -48,14 +48,14 @@ def count_cols(sheet):
     Immediately returns at first blank header
     """
     cols = 0
-    for col in sheet.iter_cols(min_row=1, max_col=50, max_row=2):
+    for col in sheet.iter_cols(min_col=1,max_col=20,min_row=1,max_row=2):
+    #bug https://bitbucket.org/openpyxl/openpyxl/issues/514/cell-max_row-reports-higher-than-actual
         for cell in col:
-            if (cell.value is None):
-                print("COLS COUNT: ", cols)
+            if cell.value is None:
                 return cols
             else:
                 cols = cols + 1
-
+        
 
 def dump_header(sheet,cols):
     """
@@ -96,15 +96,20 @@ def help_message(msg):
     Shows help message
     """
     print(Fore.RED + '-'*55)
-    print(Fore.RED + Style.BRIGHT + msg)
+    print(Fore.RED + msg)
     print(Fore.RED + '-'*55 + Fore.GREEN)
-    print(sys.argv[0] + " -i <inputfile> -o <outputfile> -d <column> -p\n")
+    print(Style.BRIGHT + Fore.YELLOW + "(Argument Order is Specific!!)")
+    print(Style.RESET_ALL + "Examples:")
+    print(sys.argv[0] + " -h")
+    print(sys.argv[0] + " -i <inputfile> -p")
+    print(sys.argv[0] + " -i <inputfile> -d <column>\n")
     print("-h prints this help message")
     print("-i inputfile is your source, input file")
     #print("-o outputfile is your source, output file")
     print("-d is to dump a column, you must specify which column")
     print("-p is to peek at the header and first row")
     print(Style.RESET_ALL)
+    list_files('xlsx')
     sys.exit(2)
 
 def is_accessible(path, mode='r'):
@@ -136,6 +141,9 @@ def main():
 
 
     for opt, arg in opts:
+        if opt in ("-h", "-help", '-?'):
+            help_message("INSTRUCTIONS")
+
         if opt in ("-i"):
             i = 1
 
@@ -147,41 +155,30 @@ def main():
             if (is_accessible(arg)):
                 inputfile = arg
                 # load a workbook object
-                workbook = load_workbook(filename=inputfile)
+                workbook = load_workbook(filename=inputfile, data_only=True)
 
                 # get the sheet names
                 sheetnames = workbook.sheetnames
                 sheet = workbook.active
             else: help_message("CANNOT READ FILE")
 
-
-    # see if we are going to peek
-    for opt, arg in opts:
         if opt in ("-p"):
-            cols = count_cols(sheet)
-            dump_header(sheet,cols)
-            sys.exit(2)
-
-    # it will perform each opt so make sure order is correct here
-    for opt, arg in opts:
-        if opt in ("-h", "-help", '-?'):
-            help_message("INSTRUCTIONS")
-
-
-
-        # verify file exists, writable
-        elif opt in ("-o"):
-            outputfile = arg
-        elif opt in ("-d"):
-            if (i):
-                if (is_accessible(arg)):
-                    get_col(sheet,int(arg))
-                else: help_message("CANNOT READ FILE")
+            if i:
+                cols = count_cols(sheet)
+                dump_header(sheet,cols)
+                sys.exit(2)
             else:
-                list_files('xlsx')
                 help_message("MISSING INPUT FILE")
-        else:
-            help_message("INVALID OPTION")
+
+
+        if opt in ("-d"):
+            if i:
+                get_col(sheet,int(arg))
+                sys.exit()
+            else:
+                help_message("MISSING INPUT FILE")
+        #else:
+        #    help_message("INVALID OPTION")
 
     sys.exit()
 
