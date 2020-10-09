@@ -1,4 +1,4 @@
-# spreadsheetdump
+# ssdump
 Misc Tools for Spreadsheet work
 
 - defaults to help function
