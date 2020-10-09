@@ -9,3 +9,4 @@ Misc Tools for Spreadsheet work
 ![help screen](ssdump-help.png)
 ![peeking](ssdump-peek.png)
 ![dumping column](ssdump-dumpcol7.png)
+
