@@ -57,6 +57,7 @@ def count_cols(sheet):
                 cols = cols + 1
 
 
+
 def dump_header(sheet,cols):
     """
     Given a sheet, and colums, tell me the header names and first row values
