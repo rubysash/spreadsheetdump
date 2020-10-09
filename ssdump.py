@@ -50,7 +50,7 @@ def count_cols(sheet):
     cols = 0
     for col in sheet.iter_cols(min_row=1, max_col=50, max_row=2):
         for cell in col:
-            if (type(cell.value) eq None):
+            if (cell.value is None):
                 print("COLS COUNT: ", cols)
                 return cols
             else:
